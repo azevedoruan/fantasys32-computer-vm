@@ -65,16 +65,12 @@
 
 class VirtualMachine {
    private:
-    int flag = 0;  // To print log (0 = no print, 1 = instr, 2 = instr and details)
-    uint32_t readInstructionFromRegister(uint32_t reg);
-    void printFlags(uint32_t instr, uint32_t opcode, const char* instrName);
-
-   public:
+    // To debug log (0 = no print, 1 = instr, 2 = instr and details)
+    int verbosity = 0;
     const int32_t SP = 14;
     const int32_t PC = 15;
 
     /*
-     * Registers:
      * Each register has 4 byte.
      * regs[0] -> R0, regs[1] -> R1, regs[2] -> R2, etc...
      * The last register (regs[15]) has the address of the next instruction.
@@ -87,9 +83,28 @@ class VirtualMachine {
      * A game must have max size of 16MB.
      */
     uint8_t* mem;
+    uint32_t* buffer;
+    int width;
+    int height;
 
-    VirtualMachine(const char* binFile, int flag = 0);
+    uint32_t readInstructionFromRegister(uint32_t reg);
+    void printDebug(uint32_t instr, uint32_t opcode, const char* instrName);
+
+    // Limpa a tela preenchendo todos os pixels com a cor especificada
+    void screenClean(uint32_t color);
+
+    // Define uma cor para o pixel posicionado na coordenada.
+    void setPixel(int x, int y, uint32_t color);
+
+    // Função para pintar um retângulo no framebuffer com a cor especificada
+    // A função impede que o retângulo seja desenhado fora dos limites do framebuffer,
+    //    garantindo que não haja acesso inválido.
+    void drawRect(int x, int y, int w, int h, uint32_t color);
+
+   public:
+    VirtualMachine(const char* binFile, int verbosity = 0, int width, int height, int scale_factor = 1);
     ~VirtualMachine();
     void loadCode(const char* binFile);
     void executeInstruction();
+    uint32_t* getBuffer();
 };

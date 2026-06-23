@@ -15,8 +15,9 @@ class Display {
     int width;
     int height;
 
+   public:
     Display(int scale_factor);
-    bool init();
+    bool init(const char* name);
     void update(uint32_t* buffer);
     void clean();
     ~Display();

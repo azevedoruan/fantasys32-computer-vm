@@ -5,13 +5,13 @@ Display::Display(int scale_factor) {
     height = W_HEIGHT * scale_factor;
 }
 
-bool Display::init() {
+bool Display::init(const char* name) {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         return false;
     }
 
     window = SDL_CreateWindow(
-        "Example SDL",
+        name,
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         width,

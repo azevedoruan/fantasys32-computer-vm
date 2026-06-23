@@ -1,7 +1,9 @@
 #include "vm.h"
 
-VirtualMachine::VirtualMachine(const char* binFile, int flag) {
-    this->flag = flag;
+VirtualMachine::VirtualMachine(const char* binFile, int verbosity, int width, int height, int scale_factor = 1) {
+    this->verbosity = verbosity;
+    this->width = width * scale_factor;
+    this->height = height * scale_factor;
 
     // Initialize VM memories
     uint size = (uint)TAM_MEM;  // setting 16MB to our mem size. The casts is for avoid the compiler warning.
@@ -13,11 +15,11 @@ VirtualMachine::VirtualMachine(const char* binFile, int flag) {
         loadCode(binFile);
 }
 
-void VirtualMachine::printFlags(uint32_t instr, uint32_t opcode, const char* instrName) {
-    if (flag > 0) {
+void VirtualMachine::printDebug(uint32_t instr, uint32_t opcode, const char* instrName) {
+    if (this->verbosity > 0) {
         std::cout << instrName;
 
-        if (flag > 1)
+        if (this->verbosity > 1)
             std::cout << " - instruction value: 0x" << std::hex << std::setw(8) << instr << ", opcode: " << std::hex << std::setw(8) << opcode;
 
         std::cout << std::endl;
@@ -94,185 +96,185 @@ void VirtualMachine::executeInstruction() {
         // Type R ==========================================
         case ADD:
             regs[i_rd] = regs[i_rs] + regs[i_rt];
-            printFlags(instr, opcode, "ADD");
+            printDebug(instr, opcode, "ADD");
             break;
         case SUB:
             regs[i_rd] = regs[i_rs] - regs[i_rt];
-            printFlags(instr, opcode, "SUB");
+            printDebug(instr, opcode, "SUB");
             break;
         case MUL:
             regs[i_rd] = regs[i_rs] * regs[i_rt];
-            printFlags(instr, opcode, "MUL");
+            printDebug(instr, opcode, "MUL");
             break;
         case DIV:
             regs[i_rd] = regs[i_rs] / regs[i_rt];
-            printFlags(instr, opcode, "DIV");
+            printDebug(instr, opcode, "DIV");
             break;
         case MOD:
             regs[i_rd] = regs[i_rs] % regs[i_rt];
-            printFlags(instr, opcode, "MOD");
+            printDebug(instr, opcode, "MOD");
             break;
         case AND:
             regs[i_rd] = regs[i_rs] & regs[i_rt];
-            printFlags(instr, opcode, "AND");
+            printDebug(instr, opcode, "AND");
             break;
         case OR:
             regs[i_rd] = regs[i_rs] | regs[i_rt];
-            printFlags(instr, opcode, "OR");
+            printDebug(instr, opcode, "OR");
             break;
         case XOR:
             regs[i_rd] = regs[i_rs] ^ regs[i_rt];
-            printFlags(instr, opcode, "XOR");
+            printDebug(instr, opcode, "XOR");
             break;
         case SHL:
             regs[i_rd] = regs[i_rs] << (regs[i_rt] & 0x1F);
-            printFlags(instr, opcode, "SHL");
+            printDebug(instr, opcode, "SHL");
             break;
         case SHR:
             regs[i_rd] = regs[i_rs] >> (regs[i_rt] & 0x1F);
-            printFlags(instr, opcode, "SHR");
+            printDebug(instr, opcode, "SHR");
             break;
         case ROL:
             regs[i_rd] = (regs[i_rs] << (regs[i_rt] & 0x1F)) | (regs[i_rs] >> (32 - (regs[i_rt] & 0x1F)));
-            printFlags(instr, opcode, "ROL");
+            printDebug(instr, opcode, "ROL");
             break;
         case ROR:
             regs[i_rd] = (regs[i_rs] >> (regs[i_rt] & 0x1F)) | (regs[i_rs] << (32 - (regs[i_rt] & 0x1F)));
-            printFlags(instr, opcode, "ROR");
+            printDebug(instr, opcode, "ROR");
             break;
         // Type I ==========================================
         case ADDI:
             regs[i_rt] = regs[i_rs] + i_imm18;
-            printFlags(instr, opcode, "ADDI");
+            printDebug(instr, opcode, "ADDI");
             break;
         case MOVL:
             regs[i_rt] = i_imm18 & 0xFFFF;
-            printFlags(instr, opcode, "MOVL");
+            printDebug(instr, opcode, "MOVL");
             break;
         case MOVH:
             regs[i_rt] = regs[i_rt] | (i_imm18 << 16);
-            printFlags(instr, opcode, "MOVH");
+            printDebug(instr, opcode, "MOVH");
             break;
         case LOAD:
             regs[i_rt] = mem[regs[i_rs] + (i_imm18 * 4)];
-            printFlags(instr, opcode, "LOAD");
+            printDebug(instr, opcode, "LOAD");
             break;
         case STORE:
             mem[regs[i_rs] + (i_imm18 * 4)] = regs[i_rt];
-            printFlags(instr, opcode, "STORE");
+            printDebug(instr, opcode, "STORE");
             break;
         case BEQ:
             if (regs[i_rs] == regs[i_rt]) {
                 regs[PC] = regs[PC] + ((i_imm18 & 0xFFFF) * 4);
             }
-            printFlags(instr, opcode, "BEQ");
+            printDebug(instr, opcode, "BEQ");
             break;
         case BNE:
             if (regs[i_rs] != regs[i_rt]) {
                 regs[PC] = regs[PC] + ((i_imm18 & 0xFFFF) * 4);
             }
-            printFlags(instr, opcode, "BNE");
+            printDebug(instr, opcode, "BNE");
             break;
         case BLT:
             if (regs[i_rs] < regs[i_rt]) {
                 regs[PC] = regs[PC] + ((i_imm18 & 0xFFFF) * 4);
             }
-            printFlags(instr, opcode, "BLT");
+            printDebug(instr, opcode, "BLT");
             break;
         case BGT:
             if (regs[i_rs] > regs[i_rt]) {
                 regs[PC] = regs[PC] + ((i_imm18 & 0xFFFF) * 4);
             }
-            printFlags(instr, opcode, "BGT");
+            printDebug(instr, opcode, "BGT");
             break;
         case BLE:
             if (regs[i_rs] <= regs[i_rt]) {
                 regs[PC] = regs[PC] + ((i_imm18 & 0xFFFF) * 4);
             }
-            printFlags(instr, opcode, "BLE");
+            printDebug(instr, opcode, "BLE");
             break;
         case BGE:
             if (regs[i_rs] >= regs[i_rt]) {
                 regs[PC] = regs[PC] + ((i_imm18 & 0xFFFF) * 4);
             }
-            printFlags(instr, opcode, "BGE");
+            printDebug(instr, opcode, "BGE");
             break;
         // Type J ==========================================
         case JMP:
             regs[PC] = addr26 * 4;
-            printFlags(instr, opcode, "JMP");
+            printDebug(instr, opcode, "JMP");
             break;
         case CALL:
             // TODO...
-            printFlags(instr, opcode, "CALL todo...");
+            printDebug(instr, opcode, "CALL todo...");
             break;
         // Type U ==========================================
         case PUSH:
             regs[SP] = regs[SP] - 4;
             mem[regs[SP]] = regs[i_rd];
-            printFlags(instr, opcode, "PUSH");
+            printDebug(instr, opcode, "PUSH");
             break;
         case POP:
             regs[i_rd] = mem[regs[SP]];
             regs[SP] = regs[SP] + 4;
-            printFlags(instr, opcode, "POP");
+            printDebug(instr, opcode, "POP");
             break;
         case INC:
             regs[i_rd] = regs[i_rd] + 1;
-            printFlags(instr, opcode, "INC");
+            printDebug(instr, opcode, "INC");
             break;
         case DEC:
             regs[i_rd] = regs[i_rd] - 1;
-            printFlags(instr, opcode, "DEC");
+            printDebug(instr, opcode, "DEC");
             break;
         case NOT:
             regs[i_rd] = ~regs[i_rd];
-            printFlags(instr, opcode, "NOT");
+            printDebug(instr, opcode, "NOT");
             break;
         case RET:
             regs[PC] = mem[regs[SP]];
             regs[SP] = regs[SP] + 4;
-            printFlags(instr, opcode, "RET");
+            printDebug(instr, opcode, "RET");
             break;
         // Type S ==========================================
         case RECT:
-            printFlags(instr, opcode, "RECT todo...");
+            printDebug(instr, opcode, "RECT todo...");
             break;
         case DSPRITE:
-            printFlags(instr, opcode, "DSPRITE todo...");
+            printDebug(instr, opcode, "DSPRITE todo...");
             break;
         case CLEAR:
-            printFlags(instr, opcode, "CLEAR todo...");
+            printDebug(instr, opcode, "CLEAR todo...");
             break;
         case GKEY:
-            printFlags(instr, opcode, "GKEY todo...");
+            printDebug(instr, opcode, "GKEY todo...");
             break;
         case PLAY:
-            printFlags(instr, opcode, "PLAY todo...");
+            printDebug(instr, opcode, "PLAY todo...");
             break;
         case SLEEP:
-            printFlags(instr, opcode, "SLEEP todo...");
+            printDebug(instr, opcode, "SLEEP todo...");
             break;
         case PSTR:
-            printFlags(instr, opcode, "PSTR todo...");
+            printDebug(instr, opcode, "PSTR todo...");
             break;
         case PINT:
-            printFlags(instr, opcode, "PINT todo...");
+            printDebug(instr, opcode, "PINT todo...");
             break;
         case SYSCALL:
-            printFlags(instr, opcode, "SYSCALL todo...");
+            printDebug(instr, opcode, "SYSCALL todo...");
             break;
         case SRAND:
-            printFlags(instr, opcode, "SRAND todo...");
+            printDebug(instr, opcode, "SRAND todo...");
             break;
         case RAND:
-            printFlags(instr, opcode, "RAND todo...");
+            printDebug(instr, opcode, "RAND todo...");
             break;
         case FRAMENUM:
-            printFlags(instr, opcode, "FRAMENUM todo...");
+            printDebug(instr, opcode, "FRAMENUM todo...");
             break;
         case HALT:
-            printFlags(instr, opcode, "HALT todo...");
+            printDebug(instr, opcode, "HALT todo...");
             break;
         default:
             std::cout << "Instrução não implementada: 0x" << std::hex << std::setw(8) << instr << ", opcode: 0x" << std::hex << std::setw(8) << opcode << std::endl;

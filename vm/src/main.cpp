@@ -1,7 +1,11 @@
 #include <argparse/argparse.hpp>
 #include <filesystem>
 
+#include "display.h"
 #include "vm.h"
+
+// Executa 10⁴ instruções por segundo.
+#define INSTR_PER_SEC 10000
 
 int main(int argc, char* argv[]) {
     argparse::ArgumentParser parser("Fantasys32 VM", "1.0");
@@ -56,10 +60,43 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
+    Display* display = new Display(scale);
+    if (!display->init("Fantasys32 VM")) {
+        return -1;
+    }
     VirtualMachine* vm = new VirtualMachine(file_path.c_str(), verbosity);
 
-    while (1) {
-        vm->executeInstruction();
+    bool running = true;
+    SDL_Event e;
+
+    while (running) {
+        Uint64 start_frame = SDL_GetTicks64();
+
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                running = false;
+            }
+
+            if (e.type == SDL_KEYDOWN) {
+                // TODO set inputs
+            }
+
+            if (e.type == SDL_KEYUP) {
+                // TODO set input up
+            }
+        }
+
+        for (int i = 0; i < INSTR_PER_SEC; i++) {
+            vm->executeInstruction();
+        }
+
+        display->update(vm->getBuffer());
+
+        // FPS Handler
+        Uint64 delta_frame = SDL_GetTicks64() - start_frame;
+        if (delta_frame < FRAME_TIME) {
+            SDL_Delay(delta_frame - FRAME_TIME);
+        }
     }
 
     return 0;
