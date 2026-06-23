@@ -5,6 +5,10 @@ VirtualMachine::VirtualMachine(const char* binFile, int verbosity, int width, in
     this->width = width * scale_factor;
     this->height = height * scale_factor;
 
+    // Initialize FrameBuffer
+    buffer = new uint32_t[this->width * this->height];
+    screenClean(0xFFFFFFFF);  // Set screen primarily white
+
     // Initialize VM memories
     uint size = (uint)TAM_MEM;  // setting 16MB to our mem size. The casts is for avoid the compiler warning.
     mem = new uint8_t[size];
@@ -238,13 +242,16 @@ void VirtualMachine::executeInstruction() {
             break;
         // Type S ==========================================
         case RECT:
-            printDebug(instr, opcode, "RECT todo...");
+            drawRect(regs[i_ra], regs[i_rb], regs[i_rc], regs[i_rd], regs[i_re]);
+            printDebug(instr, opcode, "RECT");
             break;
         case DSPRITE:
-            printDebug(instr, opcode, "DSPRITE todo...");
+            drawRect(regs[i_ra], regs[i_rb], regs[i_rc], regs[i_rd], regs[i_re]);
+            printDebug(instr, opcode, "DSPRITE");
             break;
         case CLEAR:
-            printDebug(instr, opcode, "CLEAR todo...");
+            screenClean(regs[i_ra]);
+            printDebug(instr, opcode, "CLEAR");
             break;
         case GKEY:
             printDebug(instr, opcode, "GKEY todo...");
@@ -253,22 +260,34 @@ void VirtualMachine::executeInstruction() {
             printDebug(instr, opcode, "PLAY todo...");
             break;
         case SLEEP:
+            // Usar SDL_Delay???
             printDebug(instr, opcode, "SLEEP todo...");
             break;
         case PSTR:
+            // Desenhar caracteres na mão no frameBuffer?
             printDebug(instr, opcode, "PSTR todo...");
             break;
         case PINT:
+            // Desenhar caracteres na mão no frameBuffer?
             printDebug(instr, opcode, "PINT todo...");
             break;
         case SYSCALL:
             printDebug(instr, opcode, "SYSCALL todo...");
             break;
         case SRAND:
-            printDebug(instr, opcode, "SRAND todo...");
+            srand(regs[i_ra]);
+            printDebug(instr, opcode, "SRAND");
             break;
         case RAND:
-            printDebug(instr, opcode, "RAND todo...");
+            // int n = rand();
+            // if (n <= regs[i_rb]) {
+            //     n = regs[i_rb];
+            // }
+            // if (n >= regs[i_rc]) {
+            //     n = regs[i_rc];
+            // }
+            // regs[i_ra] = n;
+            printDebug(instr, opcode, "RAND");
             break;
         case FRAMENUM:
             printDebug(instr, opcode, "FRAMENUM todo...");
