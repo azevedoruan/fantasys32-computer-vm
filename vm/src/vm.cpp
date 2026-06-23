@@ -91,7 +91,8 @@ void VirtualMachine::executeInstruction() {
     regs[PC] += 4;
 
     switch (opcode) {
-        case ADD:  // Type R
+        // Type R ==========================================
+        case ADD:
             regs[i_rd] = regs[i_rs] + regs[i_rt];
             printFlags(instr, opcode, "ADD");
             break;
@@ -139,7 +140,8 @@ void VirtualMachine::executeInstruction() {
             regs[i_rd] = (regs[i_rs] >> (regs[i_rt] & 0x1F)) | (regs[i_rs] << (32 - (regs[i_rt] & 0x1F)));
             printFlags(instr, opcode, "ROR");
             break;
-        case ADDI:  // Type I
+        // Type I ==========================================
+        case ADDI:
             regs[i_rt] = regs[i_rs] + i_imm18;
             printFlags(instr, opcode, "ADDI");
             break;
@@ -195,7 +197,8 @@ void VirtualMachine::executeInstruction() {
             }
             printFlags(instr, opcode, "BGE");
             break;
-        case JMP:  // Type J
+        // Type J ==========================================
+        case JMP:
             regs[PC] = addr26 * 4;
             printFlags(instr, opcode, "JMP");
             break;
@@ -203,7 +206,8 @@ void VirtualMachine::executeInstruction() {
             // TODO...
             printFlags(instr, opcode, "CALL todo...");
             break;
-        case PUSH:  // Type U
+        // Type U ==========================================
+        case PUSH:
             regs[SP] = regs[SP] - 4;
             mem[regs[SP]] = regs[i_rd];
             printFlags(instr, opcode, "PUSH");
@@ -230,7 +234,8 @@ void VirtualMachine::executeInstruction() {
             regs[SP] = regs[SP] + 4;
             printFlags(instr, opcode, "RET");
             break;
-        case RECT:  // Type S
+        // Type S ==========================================
+        case RECT:
             printFlags(instr, opcode, "RECT todo...");
             break;
         case DSPRITE:
