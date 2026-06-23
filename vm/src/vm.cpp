@@ -1,6 +1,6 @@
 #include "vm.h"
 
-VirtualMachine::VirtualMachine(const char* binFile, int verbosity, int width, int height, int scale_factor = 1) {
+VirtualMachine::VirtualMachine(const char* binFile, int verbosity, int width, int height, int scale_factor) {
     this->verbosity = verbosity;
     this->width = width * scale_factor;
     this->height = height * scale_factor;
@@ -236,10 +236,10 @@ void VirtualMachine::executeInstruction() {
             regs[SP] = regs[SP] + 4;
             printDebug(instr, opcode, "RET");
             break;
-        // Type S ==========================================
-        case RECT:
-            printDebug(instr, opcode, "RECT todo...");
-            break;
+            // Type S ==========================================
+            //       case RECT:
+            //           printDebug(instr, opcode, "RECT todo...");
+            //           break;
         case DSPRITE:
             printDebug(instr, opcode, "DSPRITE todo...");
             break;

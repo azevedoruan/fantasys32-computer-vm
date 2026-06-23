@@ -42,6 +42,8 @@ bool Display::init(const char* name) {
     if (!texture) {
         return false;
     }
+
+    return true;
 }
 
 void Display::update(uint32_t* buffer) {

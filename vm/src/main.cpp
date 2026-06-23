@@ -64,10 +64,16 @@ int main(int argc, char* argv[]) {
     if (!display->init("Fantasys32 VM")) {
         return -1;
     }
-    VirtualMachine* vm = new VirtualMachine(file_path.c_str(), verbosity);
+    VirtualMachine* vm = new VirtualMachine(file_path.c_str(), verbosity, W_WIDTH, W_HEIGHT, scale);
 
     bool running = true;
     SDL_Event e;
+
+    // Start TEST===============
+    // while (1) {
+    //     vm->executeInstruction();
+    // }
+    // return 0;
 
     while (running) {
         Uint64 start_frame = SDL_GetTicks64();
