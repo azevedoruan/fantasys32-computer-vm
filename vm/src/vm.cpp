@@ -236,10 +236,10 @@ void VirtualMachine::executeInstruction() {
             regs[SP] = regs[SP] + 4;
             printDebug(instr, opcode, "RET");
             break;
-            // Type S ==========================================
-            //       case RECT:
-            //           printDebug(instr, opcode, "RECT todo...");
-            //           break;
+        // Type S ==========================================
+        case RECT:
+            printDebug(instr, opcode, "RECT todo...");
+            break;
         case DSPRITE:
             printDebug(instr, opcode, "DSPRITE todo...");
             break;
@@ -280,4 +280,30 @@ void VirtualMachine::executeInstruction() {
             std::cout << "Instrução não implementada: 0x" << std::hex << std::setw(8) << instr << ", opcode: 0x" << std::hex << std::setw(8) << opcode << std::endl;
             exit(1);
     }
+}
+
+void VirtualMachine::drawRect(int x, int y, int w, int h, uint32_t color) {
+    for (int line = y; line < y + h; line++) {
+        for (int col = x; col < x + w; col++) {
+            if (line >= 0 && line < width) {
+                if (col >= 0 && col < height) {
+                    setPixel(col, line, color);
+                }
+            }
+        }
+    }
+}
+
+void VirtualMachine::setPixel(int x, int y, uint32_t color) {
+    buffer[x + (y * width)] = color;
+}
+
+void VirtualMachine::screenClean(uint32_t color) {
+    for (int i = 0; i < width * height; i++) {
+        buffer[i] = color;
+    }
+}
+
+uint32_t* VirtualMachine::getBuffer() {
+    return buffer;
 }
