@@ -54,6 +54,11 @@ uint32_t VirtualMachine::readInstructionFromRegister(uint32_t reg) {
 }
 
 void VirtualMachine::executeInstruction(bool* running) {
+    // Something happened outside this scope and must finish the loop
+    if (*running == false) {
+        return;
+    }
+
     *running = true;
     uint32_t instr = readInstructionFromRegister(regs[PC]);
     uint32_t opcode = instr >> 26;
@@ -268,8 +273,8 @@ void VirtualMachine::executeInstruction(bool* running) {
             printDebug(instr, opcode, "PLAY todo...");
             break;
         case SLEEP:
-            // Usar SDL_Delay???
-            printDebug(instr, opcode, "SLEEP todo...");
+            sleep_ms = regs[i_ra];
+            printDebug(instr, opcode, "SLEEP");
             break;
         case PSTR:
             // Desenhar caracteres na mão no frameBuffer?

@@ -9,6 +9,7 @@
 
 uint8_t setKeyDown(SDL_Keysym keysym);
 uint8_t setKeyUp(SDL_Keysym keysym);
+bool sleepInstructions(VirtualMachine* vm);
 
 int main(int argc, char* argv[]) {
     argparse::ArgumentParser parser("Fantasys32 VM", "1.0");
@@ -91,8 +92,10 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        for (int i = 0; i < 100; i++) {
-            vm->executeInstruction(&running);
+        if (!sleepInstructions(vm)) {
+            for (int i = 0; i < 100; i++) {
+                vm->executeInstruction(&running);
+            }
         }
 
         display->update(vm->getBuffer());
@@ -104,7 +107,20 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    display->clean();
+
     return 0;
+}
+
+bool sleepInstructions(VirtualMachine* vm) {
+    if (vm->sleep_ms > 0) {
+        vm->sleep_ms -= FRAME_TIME;
+        if (vm->sleep_ms <= 0) {
+            vm->sleep_ms = 0;
+        }
+        return true;
+    }
+    return false;
 }
 
 uint8_t setKeyDown(SDL_Keysym keysym) {
