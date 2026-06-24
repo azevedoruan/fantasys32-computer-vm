@@ -286,8 +286,7 @@ void VirtualMachine::executeInstruction(bool* running) {
             srand(regs[i_ra]);
             printDebug(instr, opcode, "SRAND");
             break;
-        case RAND:
-            // Gera erro de compilação quando descomento esse trecho
+        case RAND: {
             int n = rand();
             if (n <= regs[i_rb]) {
                 n = regs[i_rb];
@@ -298,12 +297,14 @@ void VirtualMachine::executeInstruction(bool* running) {
             regs[i_ra] = n;
             printDebug(instr, opcode, "RAND");
             break;
+        }
         case FRAMENUM:
             printDebug(instr, opcode, "FRAMENUM todo...");
             break;
         case HALT:
             *running = false;
             printDebug(instr, opcode, "HALT");
+            break;
         default:
             std::cout << "Instrução não implementada: 0x" << std::hex << std::setw(8) << instr << ", opcode: 0x" << std::hex << std::setw(8) << opcode << std::endl;
             exit(1);
