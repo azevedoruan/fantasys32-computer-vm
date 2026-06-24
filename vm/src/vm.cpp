@@ -169,37 +169,37 @@ void VirtualMachine::executeInstruction() {
             break;
         case BEQ:
             if (regs[i_rs] == regs[i_rt]) {
-                regs[PC] = regs[PC] + ((i_imm18 & 0xFFFF) * 4);
+                regs[PC] = regs[PC] + ((int16_t)(i_imm18 & 0xFFFF) * 4);
             }
             printDebug(instr, opcode, "BEQ");
             break;
         case BNE:
             if (regs[i_rs] != regs[i_rt]) {
-                regs[PC] = regs[PC] + ((i_imm18 & 0xFFFF) * 4);
+                regs[PC] = regs[PC] + ((int16_t)(i_imm18 & 0xFFFF) * 4);
             }
             printDebug(instr, opcode, "BNE");
             break;
         case BLT:
             if (regs[i_rs] < regs[i_rt]) {
-                regs[PC] = regs[PC] + ((i_imm18 & 0xFFFF) * 4);
+                regs[PC] = regs[PC] + ((int16_t)(i_imm18 & 0xFFFF) * 4);
             }
             printDebug(instr, opcode, "BLT");
             break;
         case BGT:
             if (regs[i_rs] > regs[i_rt]) {
-                regs[PC] = regs[PC] + ((i_imm18 & 0xFFFF) * 4);
+                regs[PC] = regs[PC] + ((int16_t)(i_imm18 & 0xFFFF) * 4);
             }
             printDebug(instr, opcode, "BGT");
             break;
         case BLE:
             if (regs[i_rs] <= regs[i_rt]) {
-                regs[PC] = regs[PC] + ((i_imm18 & 0xFFFF) * 4);
+                regs[PC] = regs[PC] + ((int16_t)(i_imm18 & 0xFFFF) * 4);
             }
             printDebug(instr, opcode, "BLE");
             break;
         case BGE:
             if (regs[i_rs] >= regs[i_rt]) {
-                regs[PC] = regs[PC] + ((i_imm18 & 0xFFFF) * 4);
+                regs[PC] = regs[PC] + ((int16_t)(i_imm18 & 0xFFFF) * 4);
             }
             printDebug(instr, opcode, "BGE");
             break;
@@ -209,7 +209,9 @@ void VirtualMachine::executeInstruction() {
             printDebug(instr, opcode, "JMP");
             break;
         case CALL:
-            // TODO...
+            regs[SP] = regs[SP] - 4;
+            mem[regs[SP]] = regs[regs[PC] + 4];
+            regs[PC] = addr26 * 4;
             printDebug(instr, opcode, "CALL todo...");
             break;
         // Type U ==========================================
@@ -254,7 +256,12 @@ void VirtualMachine::executeInstruction() {
             printDebug(instr, opcode, "CLEAR");
             break;
         case GKEY:
-            printDebug(instr, opcode, "GKEY todo...");
+            if (input_state == regs[i_rb]) {
+                regs[i_ra] = 1;
+            } else {
+                regs[i_ra] = 0;
+            }
+            printDebug(instr, opcode, "GKEY");
             break;
         case PLAY:
             printDebug(instr, opcode, "PLAY todo...");
@@ -279,6 +286,7 @@ void VirtualMachine::executeInstruction() {
             printDebug(instr, opcode, "SRAND");
             break;
         case RAND:
+            // Gera erro de compilação quando descomento esse trecho
             // int n = rand();
             // if (n <= regs[i_rb]) {
             //     n = regs[i_rb];
@@ -293,8 +301,8 @@ void VirtualMachine::executeInstruction() {
             printDebug(instr, opcode, "FRAMENUM todo...");
             break;
         case HALT:
-            printDebug(instr, opcode, "HALT todo...");
-            break;
+            printDebug(instr, opcode, "HALT");
+            return;
         default:
             std::cout << "Instrução não implementada: 0x" << std::hex << std::setw(8) << instr << ", opcode: 0x" << std::hex << std::setw(8) << opcode << std::endl;
             exit(1);
@@ -304,8 +312,8 @@ void VirtualMachine::executeInstruction() {
 void VirtualMachine::drawRect(int x, int y, int w, int h, uint32_t color) {
     for (int line = y; line < y + h; line++) {
         for (int col = x; col < x + w; col++) {
-            if (line >= 0 && line < width) {
-                if (col >= 0 && col < height) {
+            if (line >= 0 && line < height) {
+                if (col >= 0 && col < width) {
                     setPixel(col, line, color);
                 }
             }

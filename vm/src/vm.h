@@ -102,6 +102,7 @@ class VirtualMachine {
     void drawRect(int x, int y, int w, int h, uint32_t color);
 
    public:
+    uint8_t input_state = 0;
     VirtualMachine(const char* binFile, int verbosity = 0, int width = 0, int height = 0, int scale_factor = 1);
     ~VirtualMachine();
     void loadCode(const char* binFile);
