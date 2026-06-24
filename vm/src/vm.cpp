@@ -310,11 +310,18 @@ void VirtualMachine::executeInstruction(bool* running) {
             regs[i_rd] = ~regs[i_rd];
             printDebug(instr, opcode, "NOT");
             break;
-        case RET:
-            regs[PC] = (mem[regs[SP]] << 24) | (mem[regs[SP] + 1] << 16) | (mem[regs[SP] + 2] << 8) | mem[regs[SP] + 3];
-            regs[SP] = regs[SP] + 4;
+        case RET: {
+            uint32_t addr = regs[SP];
+            if (addr > STACK_END - 3 || addr < STACK_START) {
+                std::cerr << "RET: stack underflow" << std::endl;
+                *running = false;
+                break;
+            }
+            regs[PC] = ((uint32_t)mem[addr] << 24) | ((uint32_t)mem[addr + 1] << 16) | ((uint32_t)mem[addr + 2] << 8) | mem[addr + 3];
+            regs[SP] = addr + 4;
             printDebug(instr, opcode, "RET");
             break;
+        }
         // Type S ==========================================
         case RECT:
             drawRect(regs[i_ra], regs[i_rb], regs[i_rc], regs[i_rd], regs[i_re]);
