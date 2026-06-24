@@ -118,10 +118,20 @@ void VirtualMachine::executeInstruction(bool* running) {
             printDebug(instr, opcode, "MUL");
             break;
         case DIV:
+            if (regs[i_rt] == 0) {
+                std::cerr << "DIV: division by zero" << std::endl;
+                *running = false;
+                break;
+            }
             regs[i_rd] = regs[i_rs] / regs[i_rt];
             printDebug(instr, opcode, "DIV");
             break;
         case MOD:
+            if (regs[i_rt] == 0) {
+                std::cerr << "MOD: division by zero" << std::endl;
+                *running = false;
+                break;
+            }
             regs[i_rd] = regs[i_rs] % regs[i_rt];
             printDebug(instr, opcode, "MOD");
             break;
@@ -145,14 +155,24 @@ void VirtualMachine::executeInstruction(bool* running) {
             regs[i_rd] = regs[i_rs] >> (regs[i_rt] & 0x1F);
             printDebug(instr, opcode, "SHR");
             break;
-        case ROL:
-            regs[i_rd] = (regs[i_rs] << (regs[i_rt] & 0x1F)) | (regs[i_rs] >> (32 - (regs[i_rt] & 0x1F)));
+        case ROL: {
+            uint32_t shift = regs[i_rt] & 0x1F;
+            if (shift == 0)
+                regs[i_rd] = regs[i_rs];
+            else
+                regs[i_rd] = (regs[i_rs] << shift) | ((uint32_t)regs[i_rs] >> (32 - shift));
             printDebug(instr, opcode, "ROL");
             break;
-        case ROR:
-            regs[i_rd] = (regs[i_rs] >> (regs[i_rt] & 0x1F)) | (regs[i_rs] << (32 - (regs[i_rt] & 0x1F)));
+        }
+        case ROR: {
+            uint32_t shift = regs[i_rt] & 0x1F;
+            if (shift == 0)
+                regs[i_rd] = regs[i_rs];
+            else
+                regs[i_rd] = ((uint32_t)regs[i_rs] >> shift) | (regs[i_rs] << (32 - shift));
             printDebug(instr, opcode, "ROR");
             break;
+        }
         // Type I ==========================================
         case ADDI:
             regs[i_rt] = regs[i_rs] + i_imm18;
