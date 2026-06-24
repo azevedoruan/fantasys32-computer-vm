@@ -106,6 +106,6 @@ class VirtualMachine {
     VirtualMachine(const char* binFile, int verbosity = 0, int width = 0, int height = 0, int scale_factor = 1);
     ~VirtualMachine();
     void loadCode(const char* binFile);
-    void executeInstruction();
+    void executeInstruction(bool* running);
     uint32_t* getBuffer();
 };

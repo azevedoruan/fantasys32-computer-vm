@@ -53,7 +53,8 @@ uint32_t VirtualMachine::readInstructionFromRegister(uint32_t reg) {
     return data;
 }
 
-void VirtualMachine::executeInstruction() {
+void VirtualMachine::executeInstruction(bool* running) {
+    *running = true;
     uint32_t instr = readInstructionFromRegister(regs[PC]);
     uint32_t opcode = instr >> 26;
 
@@ -212,7 +213,7 @@ void VirtualMachine::executeInstruction() {
             regs[SP] = regs[SP] - 4;
             mem[regs[SP]] = regs[regs[PC] + 4];
             regs[PC] = addr26 * 4;
-            printDebug(instr, opcode, "CALL todo...");
+            printDebug(instr, opcode, "CALL");
             break;
         // Type U ==========================================
         case PUSH:
@@ -287,22 +288,22 @@ void VirtualMachine::executeInstruction() {
             break;
         case RAND:
             // Gera erro de compilação quando descomento esse trecho
-            // int n = rand();
-            // if (n <= regs[i_rb]) {
-            //     n = regs[i_rb];
-            // }
-            // if (n >= regs[i_rc]) {
-            //     n = regs[i_rc];
-            // }
-            // regs[i_ra] = n;
+            int n = rand();
+            if (n <= regs[i_rb]) {
+                n = regs[i_rb];
+            }
+            if (n >= regs[i_rc]) {
+                n = regs[i_rc];
+            }
+            regs[i_ra] = n;
             printDebug(instr, opcode, "RAND");
             break;
         case FRAMENUM:
             printDebug(instr, opcode, "FRAMENUM todo...");
             break;
         case HALT:
+            *running = false;
             printDebug(instr, opcode, "HALT");
-            return;
         default:
             std::cout << "Instrução não implementada: 0x" << std::hex << std::setw(8) << instr << ", opcode: 0x" << std::hex << std::setw(8) << opcode << std::endl;
             exit(1);
