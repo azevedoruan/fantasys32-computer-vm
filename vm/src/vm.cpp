@@ -14,6 +14,7 @@ VirtualMachine::VirtualMachine(const char* binFile, int verbosity, int width, in
     mem = new uint8_t[size];
     memset(mem, 0, sizeof(uint8_t) * size);
     memset(regs, 0, sizeof(int32_t) * 16);
+    regs[SP] = STACK_END;                         // SP = 0x00FFFFFF
 
     if (binFile != nullptr)
         loadCode(binFile);
@@ -381,6 +382,8 @@ void VirtualMachine::executeInstruction(bool* running) {
             std::cout << "Instrução não implementada: 0x" << std::hex << std::setw(8) << instr << ", opcode: 0x" << std::hex << std::setw(8) << opcode << std::endl;
             exit(1);
     }
+
+    regs[0] = 0;
 }
 
 void VirtualMachine::drawRect(int x, int y, int w, int h, uint32_t color) {
