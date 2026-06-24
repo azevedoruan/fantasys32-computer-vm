@@ -1,0 +1,9 @@
+Opcode (Hex),Mnemônico,Formato,Operação
+0x11,"BEQ rs, rt, imm18",I,"Se rs == rt, PC = PC + ((imm18 & 0xFFFF) * 4)"
+0x12,"BNE rs, rt, imm18",I,"Se rs != rt, PC = PC + ((imm18 & 0xFFFF) * 4)"
+0x13,"BLT rs, rt, imm18",I,"Se rs < rt, PC = PC + ((imm18 & 0xFFFF) * 4)"
+0x14,"BGT rs, rt, imm18",I,"Se rs > rt, PC = PC + ((imm18 & 0xFFFF) * 4)"
+0x15,"BLE rs, rt, imm18",I,"Se rs <= rt, PC = PC + ((imm18 & 0xFFFF) * 4)"
+0x16,"BGE rs, rt, imm18",I,"Se rs >= rt, PC = PC + ((imm18 & 0xFFFF) * 4)"
+0x17,JMP addr26,J,PC = addr26 * 4
+0x18,CALL addr26,J,PUSH(PC+4); PC = addr26 * 4

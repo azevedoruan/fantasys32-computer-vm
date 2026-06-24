@@ -1,0 +1,7 @@
+Opcode (Hex),Mnemônico,Formato,Operação
+0x19,PUSH rd,U,SP-=4; Mem[SP]=rd
+0x1A,POP rd,U,rd=Mem[SP]; SP+=4
+0x1B,INC rd,U,rd = rd + 1
+0x1C,DEC rd,U,rd = rd - 1
+0x1D,NOT rd,U,rd = ~rd
+0x1E,RET,U,PC=Mem[SP]; SP+=4 (Ignora rd)

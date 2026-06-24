@@ -214,12 +214,18 @@ void VirtualMachine::executeInstruction(bool* running) {
             regs[PC] = addr26 * 4;
             printDebug(instr, opcode, "JMP");
             break;
-        case CALL:
+        case CALL: {
             regs[SP] = regs[SP] - 4;
-            mem[regs[SP]] = regs[regs[PC] + 4];
+            // Store return address (PC already advanced past CALL) as 4 bytes big-endian
+            uint32_t ret_addr = regs[PC];
+            mem[regs[SP]]     = (ret_addr >> 24) & 0xFF;
+            mem[regs[SP] + 1] = (ret_addr >> 16) & 0xFF;
+            mem[regs[SP] + 2] = (ret_addr >> 8) & 0xFF;
+            mem[regs[SP] + 3] = ret_addr & 0xFF;
             regs[PC] = addr26 * 4;
             printDebug(instr, opcode, "CALL");
             break;
+        }
         // Type U ==========================================
         case PUSH:
             regs[SP] = regs[SP] - 4;
@@ -244,7 +250,7 @@ void VirtualMachine::executeInstruction(bool* running) {
             printDebug(instr, opcode, "NOT");
             break;
         case RET:
-            regs[PC] = mem[regs[SP]];
+            regs[PC] = (mem[regs[SP]] << 24) | (mem[regs[SP] + 1] << 16) | (mem[regs[SP] + 2] << 8) | mem[regs[SP] + 3];
             regs[SP] = regs[SP] + 4;
             printDebug(instr, opcode, "RET");
             break;
@@ -304,7 +310,8 @@ void VirtualMachine::executeInstruction(bool* running) {
             break;
         }
         case FRAMENUM:
-            printDebug(instr, opcode, "FRAMENUM todo...");
+            regs[i_ra] = frame_count;
+            printDebug(instr, opcode, "FRAMENUM");
             break;
         case HALT:
             *running = false;
@@ -340,4 +347,8 @@ void VirtualMachine::screenClean(uint32_t color) {
 
 uint32_t* VirtualMachine::getBuffer() {
     return buffer;
+}
+
+VirtualMachine::~VirtualMachine() {
+    frame_count = 0;
 }

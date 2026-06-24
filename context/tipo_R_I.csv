@@ -1,0 +1,14 @@
+Opcode (Hex),Mnemônico,Formato,Operação
+0x00,"ADD rd, rs, rt",R,rd = rs + rt
+0x01,"SUB rd, rs, rt",R,rd = rs - rt
+0x02,"MUL rd, rs, rt",R,rd = rs * rt
+0x03,"DIV rd, rs, rt",R,rd = rs / rt
+0x04,"MOD rd, rs, rt",R,rd = rs % rt
+0x05,"AND rd, rs, rt",R,rd = rs & rt
+0x06,"OR rd, rs, rt",R,rd = rs | rt
+0x07,"XOR rd, rs, rt",R,rd = rs ^ rt
+0x08,"SHL rd, rs, rt",R,rd = rs << (rt & 0x1F)
+0x09,"SHR rd, rs, rt",R,rd = rs >> (rt & 0x1F)
+0x0A,"ROL rd, rs, rt",R,rd = (rs << (rt & 0x1F)) | (rs >> (32 - (rt & 0x1F)))
+0x0B,"ROR rd, rs, rt",R,rd = (rs >> (rt & 0x1F)) | (rs << (32 - (rt & 0x1F)))
+0x0C,"ADDI rt, rs, imm18",I,rt = rs + imm18

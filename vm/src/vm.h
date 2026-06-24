@@ -103,6 +103,7 @@ class VirtualMachine {
 
    public:
     uint8_t input_state = 0;
+    int frame_count = 0;
     int sleep_ms = 0;
     VirtualMachine(const char* binFile, int verbosity = 0, int width = 0, int height = 0, int scale_factor = 1);
     ~VirtualMachine();

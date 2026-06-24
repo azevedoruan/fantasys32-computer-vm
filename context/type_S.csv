@@ -1,0 +1,14 @@
+Opcode (Hex),Mnemônico,Formato,Operação
+0x1F,"RECT ra, rb, rc, rd, re",S,"ra=x, rb=y, rc=w, rd=h, re=color"
+0x20,"DSPRITE ra, rb, rc, rd, re",S,"ra = x, rb = y, rc = w, rd = h, re = endereço do sprite"
+0x21,CLEAR ra,S,ra=color (Limpa tela)
+0x22,"GKEY ra, rb",S,"ra=dest, rb=keyID (Lê teclado)"
+0x23,"PLAY ra, rb, rc",S,"ra=freq, rb=ms, rc=forma (Som não-bloqueante)"
+0x24,SLEEP ra,S,ra=ms (Pausa execução por um tempo)
+0x25,"PSTR ra, rb, rc, rd",S,"ra=x, rb=y, rc=addr, rd=color (Imprime string)"
+0x26,"PINT ra, rb, rc, rd",S,"ra=x, rb=y, rc=val, rd=color (Imprime inteiro)"
+0x27,"SYSCALL ra, rb, rc, rd, re",S,"ra=codigo, rb=arg1, rc=arg2, rd=arg3, re=arg4 (Reservado para extensões)"
+0x28,SRAND ra,S,ra=seed (Inicializa gerador de números aleatórios)
+0x29,"RAND ra, rb, rc",S,"ra=dest, rb=min, rc=max (Gera número aleatório)"
+0x2A,FRAMENUM ra,S,ra=dest (retorna o número de frames renderizados até o momento)
+0x2B,HALT,S,Finaliza a execução da VM

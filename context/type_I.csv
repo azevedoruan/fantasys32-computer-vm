@@ -1,0 +1,5 @@
+Opcode (Hex),Mnemônico,Formato,Operação
+0x0D,"MOVL rt, imm16",I,rt = (imm16 & 0xFFFF) (Zera bits superiores)
+0x0E,"MOVH rt, imm16",I,rt = rt | (imm16 << 16) (Preserva inferiores)
+0x0F,"LOAD rt, rs, imm18",I,rt = Mem[rs + (imm18 * 4)]
+0x10,"STORE rt, rs, imm18",I,Mem[rs + (imm18 * 4)] = rt

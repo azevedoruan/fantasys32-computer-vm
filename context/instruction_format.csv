@@ -1,0 +1,6 @@
+Formato,bits 31 à 26,bits 25 à 22,bits 21 à 18,bits 17 à 14,bits 13 à 10,bits 9 à 6,bits 5 à 0
+Tipo R,Opcode,rs,rt,rd,0,0,0
+Tipo I,Opcode,rs,rt,Imediato (18 bits),,,
+Tipo J,Opcode,Deslocamento (26 bits),,,,,
+Tipo S,Opcode,ra,rb,rc,rd,re,0
+Tipo U,Opcode,rd,0 (22 bits),,,,

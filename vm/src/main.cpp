@@ -75,6 +75,7 @@ int main(int argc, char* argv[]) {
 
     while (running) {
         Uint64 start_frame = SDL_GetTicks64();
+        vm->frame_count += 1;
 
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
