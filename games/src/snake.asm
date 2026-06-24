@@ -120,9 +120,9 @@ INIT_GAME:
     MOVL R1, 0                       ; i = 0
     MOVL R3, 2                       ; shift-by-2 constant
 CLR_GRID:
-    SHL R2, R1, R3                   ; byte offset = i * 4
-    ADD R2, R6, R2                   ; address = grid + offset
-    STORE R0, R2, 0                  ; grid[i] = 0
+    SHL R1, R3, R2                   ; byte offset = i * 4
+    ADD R6, R2, R2                   ; address = grid + offset
+    STORE R2, R0, 0                  ; grid[i] = 0
     ADDI R1, R1, 1
     MOVL R2, TOTAL_CELLS
     BLT R1, R2, CLR_GRID
@@ -130,69 +130,69 @@ CLR_GRID:
     ; Mark the three initial snake segments on the grid
     ; grid[7*20 + 3] = grid[143] = 1  (tail)
     MOVL R1, 143
-    SHL R1, R1, R3
-    ADD R1, R6, R1
+    SHL R1, R3, R1
+    ADD R6, R1, R1
     MOVL R2, 1
-    STORE R2, R1, 0
+    STORE R1, R2, 0
 
     ; grid[7*20 + 4] = grid[144] = 1  (body)
     MOVL R1, 144
-    SHL R1, R1, R3
-    ADD R1, R6, R1
-    STORE R2, R1, 0
+    SHL R1, R3, R1
+    ADD R6, R1, R1
+    STORE R1, R2, 0
 
     ; grid[7*20 + 5] = grid[145] = 1  (head)
     MOVL R1, 145
-    SHL R1, R1, R3
-    ADD R1, R6, R1
-    STORE R2, R1, 0
+    SHL R1, R3, R1
+    ADD R6, R1, R1
+    STORE R1, R2, 0
 
     ; grid[7*20 + 10] = grid[150] = 2 (food)
     MOVL R1, 150
-    SHL R1, R1, R3
-    ADD R1, R6, R1
+    SHL R1, R3, R1
+    ADD R6, R1, R1
     MOVL R2, 2
-    STORE R2, R1, 0
+    STORE R1, R2, 0
 
     ; Reset snake variables
     MOVL R1, 2
     MOVL R2, head_idx.l
     MOVH R2, head_idx.h
-    STORE R1, R2, 0                  ; head_idx = 2
+    STORE R2, R1, 0                  ; head_idx = 2
 
     MOVL R1, 0
     MOVL R2, tail_idx.l
     MOVH R2, tail_idx.h
-    STORE R1, R2, 0                  ; tail_idx = 0
+    STORE R2, R1, 0                  ; tail_idx = 0
 
     MOVL R1, 3
     MOVL R2, snake_len.l
     MOVH R2, snake_len.h
-    STORE R1, R2, 0                  ; snake_len = 3
+    STORE R2, R1, 0                  ; snake_len = 3
 
     MOVL R1, RIGHT
     MOVL R2, snake_dir.l
     MOVH R2, snake_dir.h
-    STORE R1, R2, 0                  ; snake_dir = RIGHT
+    STORE R2, R1, 0                  ; snake_dir = RIGHT
 
     MOVL R1, 10
     MOVL R2, food_x.l
     MOVH R2, food_x.h
-    STORE R1, R2, 0                  ; food_x = 10
+    STORE R2, R1, 0                  ; food_x = 10
 
     MOVL R1, 7
     MOVL R2, food_y.l
     MOVH R2, food_y.h
-    STORE R1, R2, 0                  ; food_y = 7
+    STORE R2, R1, 0                  ; food_y = 7
 
     MOVL R1, 0
     MOVL R2, score.l
     MOVH R2, score.h
-    STORE R1, R2, 0                  ; score = 0
+    STORE R2, R1, 0                  ; score = 0
 
     MOVL R2, game_over.l
     MOVH R2, game_over.h
-    STORE R1, R2, 0                  ; game_over = FALSE
+    STORE R2, R1, 0                  ; game_over = FALSE
 
     ; Seed RNG with the current frame number
     FRAMENUM R1
@@ -254,8 +254,8 @@ CHK_DOWN:
 SET_DIR:
     MOVL R3, snake_dir.l
     MOVH R3, snake_dir.h
-    STORE R2, R3, 0                  ; update direction
-    ADD R1, R2, R0                   ; R1 = updated direction for this move
+    STORE R3, R2, 0                  ; update direction
+    ADD R2, R0, R1                   ; R1 = updated direction for this move
 
 INPUT_DONE:
     ; R1 holds the direction to use for this tick
@@ -272,16 +272,16 @@ INPUT_DONE:
 
     ; Get current head position (grid coordinates, not pixels)
     MOVL R8, 2                       ; shift-by-2 for word-offset calc
-    SHL R7, R2, R8                   ; byte offset = head_idx * 4
-    ADD R8, R4, R7                   ; &snake_x[head_idx]
-    LOAD R9, R8, 0                   ; R9 = old_head_x (grid coord)
-    ADD R8, R5, R7                   ; &snake_y[head_idx]
-    LOAD R10, R8, 0                  ; R10 = old_head_y (grid coord)
+    SHL R2, R8, R7                   ; byte offset = head_idx * 4
+    ADD R4, R7, R8                   ; &snake_x[head_idx]
+    LOAD R8, R9, 0                   ; R9 = old_head_x (grid coord)
+    ADD R5, R7, R8                   ; &snake_y[head_idx]
+    LOAD R8, R10, 0                  ; R10 = old_head_y (grid coord)
 
     ; new_head_idx = (head_idx + 1) % MAX_SNAKE
     ADDI R2, R2, 1
     MOVL R7, MAX_SNAKE
-    MOD R2, R2, R7                   ; R2 = new_head_idx
+    MOD R2, R7, R2                   ; R2 = new_head_idx
 
     ; Compute new head position (grid coords) based on direction in R1
     MOVL R13, RIGHT
@@ -291,27 +291,27 @@ INPUT_DONE:
     MOVL R13, LEFT
     BEQ R1, R13, MOVE_LEFT
     ; UP case
-    ADD R11, R9, R0                  ; new_x = old_x
-    ADD R12, R10, R0                 ; new_y = old_y
+    ADD R9, R0, R11                  ; new_x = old_x
+    ADD R10, R0, R12                 ; new_y = old_y
     ADDI R12, R12, -1                ; new_y = old_y - 1
     JMP MOVE_DONE
 
 MOVE_RIGHT:
-    ADD R11, R9, R0                  ; new_x = old_x
+    ADD R9, R0, R11                  ; new_x = old_x
     ADDI R11, R11, 1                 ; new_x = old_x + 1
-    ADD R12, R10, R0                 ; new_y = old_y
+    ADD R10, R0, R12                 ; new_y = old_y
     JMP MOVE_DONE
 
 MOVE_DOWN:
-    ADD R11, R9, R0                  ; new_x = old_x
-    ADD R12, R10, R0                 ; new_y = old_y
+    ADD R9, R0, R11                  ; new_x = old_x
+    ADD R10, R0, R12                 ; new_y = old_y
     ADDI R12, R12, 1                 ; new_y = old_y + 1
     JMP MOVE_DONE
 
 MOVE_LEFT:
-    ADD R11, R9, R0                  ; new_x = old_x
+    ADD R9, R0, R11                  ; new_x = old_x
     ADDI R11, R11, -1                ; new_x = old_x - 1
-    ADD R12, R10, R0                 ; new_y = old_y
+    ADD R10, R0, R12                 ; new_y = old_y
     ; fall through
 
 MOVE_DONE:
@@ -328,13 +328,13 @@ MOVE_DONE:
     ; -------- 5.  Grid lookup --------------------------------------------
     ; grid_idx = new_y * G_W + new_x
     MOVL R1, G_W
-    MUL R1, R12, R1                  ; R1 = new_y * 20
-    ADD R1, R1, R11                  ; R1 = grid_idx
+    MUL R12, R1, R1                  ; R1 = new_y * 20
+    ADD R1, R11, R1                  ; R1 = grid_idx
 
     MOVL R13, 2
-    SHL R8, R1, R13                  ; byte offset
-    ADD R8, R6, R8                   ; &grid[grid_idx]
-    LOAD R9, R8, 0                   ; R9 = grid value
+    SHL R1, R13, R8                  ; byte offset
+    ADD R6, R8, R8                   ; &grid[grid_idx]
+    LOAD R8, R9, 0                   ; R9 = grid value
 
     ; -------- 6.  Self collision? -----------------------------------------
     MOVL R10, 1
@@ -347,46 +347,46 @@ MOVE_DONE:
     ; -------- 8.  Normal move (no food) -----------------------------------
     ; Write new head position into arrays
     MOVL R7, 2
-    SHL R13, R2, R7                  ; byte offset = new_head_idx * 4
-    ADD R10, R4, R13
-    STORE R11, R10, 0                ; snake_x[new_head_idx] = new_x
-    ADD R10, R5, R13
-    STORE R12, R10, 0                ; snake_y[new_head_idx] = new_y
+    SHL R2, R7, R13                  ; byte offset = new_head_idx * 4
+    ADD R4, R13, R10
+    STORE R10, R11, 0                ; snake_x[new_head_idx] = new_x
+    ADD R5, R13, R10
+    STORE R10, R12, 0                ; snake_y[new_head_idx] = new_y
 
     ; Mark new head on grid
     MOVL R10, 1
-    STORE R10, R8, 0                 ; grid[grid_idx] = 1
+    STORE R8, R10, 0                 ; grid[grid_idx] = 1
 
     ; Remove tail from grid
     ; tail position = snake_x[tail_idx], snake_y[tail_idx]
-    SHL R13, R3, R7                  ; byte offset = tail_idx * 4
-    ADD R10, R4, R13
-    LOAD R9, R10, 0                  ; R9 = tail_x
-    ADD R10, R5, R13
+    SHL R3, R7, R13                  ; byte offset = tail_idx * 4
+    ADD R4, R13, R10
+    LOAD R10, R9, 0                  ; R9 = tail_x
+    ADD R5, R13, R10
     LOAD R10, R10, 0                 ; R10 = tail_y
 
     ; grid[tail_y * G_W + tail_x] = 0
     MOVL R7, G_W
-    MUL R7, R10, R7
-    ADD R7, R7, R9                   ; R7 = tail grid index
+    MUL R10, R7, R7
+    ADD R7, R9, R7                   ; R7 = tail grid index
     MOVL R13, 2
-    SHL R7, R7, R13
-    ADD R7, R6, R7
-    STORE R0, R7, 0                  ; clear tail on grid
+    SHL R7, R13, R7
+    ADD R6, R7, R7
+    STORE R7, R0, 0                  ; clear tail on grid
 
     ; Advance tail_idx: (tail_idx + 1) % MAX_SNAKE
     ADDI R3, R3, 1
     MOVL R7, MAX_SNAKE
-    MOD R3, R3, R7                   ; R3 = new tail_idx
+    MOD R3, R7, R3                   ; R3 = new tail_idx
 
     ; Store updated indices
     MOVL R7, head_idx.l
     MOVH R7, head_idx.h
-    STORE R2, R7, 0                  ; head_idx = new_head_idx
+    STORE R7, R2, 0                  ; head_idx = new_head_idx
 
     MOVL R7, tail_idx.l
     MOVH R7, tail_idx.h
-    STORE R3, R7, 0                  ; tail_idx = new_tail_idx
+    STORE R7, R3, 0                  ; tail_idx = new_tail_idx
 
     JMP AFTER_MOVE
 
@@ -394,34 +394,34 @@ MOVE_DONE:
 ATE_FOOD:
     ; Write new head position
     MOVL R7, 2
-    SHL R13, R2, R7
-    ADD R10, R4, R13
-    STORE R11, R10, 0                ; snake_x[new_head_idx] = new_x
-    ADD R10, R5, R13
-    STORE R12, R10, 0                ; snake_y[new_head_idx] = new_y
+    SHL R2, R7, R13
+    ADD R4, R13, R10
+    STORE R10, R11, 0                ; snake_x[new_head_idx] = new_x
+    ADD R5, R13, R10
+    STORE R10, R12, 0                ; snake_y[new_head_idx] = new_y
 
     ; Mark head on grid
     MOVL R10, 1
-    STORE R10, R8, 0                 ; grid[grid_idx] = 1
+    STORE R8, R10, 0                 ; grid[grid_idx] = 1
 
     ; Update head_idx (tail_idx stays - snake grows)
     MOVL R7, head_idx.l
     MOVH R7, head_idx.h
-    STORE R2, R7, 0                  ; head_idx = new_head_idx
+    STORE R7, R2, 0                  ; head_idx = new_head_idx
 
     ; Increment snake length
     MOVL R7, snake_len.l
     MOVH R7, snake_len.h
-    LOAD R10, R7, 0
+    LOAD R7, R10, 0
     ADDI R10, R10, 1
-    STORE R10, R7, 0                 ; snake_len++
+    STORE R7, R10, 0                 ; snake_len++
 
     ; Add 10 points to score
     MOVL R7, score.l
     MOVH R7, score.h
-    LOAD R10, R7, 0
+    LOAD R7, R10, 0
     ADDI R10, R10, 10
-    STORE R10, R7, 0                 ; score += 10
+    STORE R7, R10, 0                 ; score += 10
 
     ; Spawn a new food pellet
     CALL SPAWN_FOOD
@@ -434,7 +434,7 @@ COLLIDE_SELF:
     MOVL R7, game_over.l
     MOVH R7, game_over.h
     MOVL R10, 1
-    STORE R10, R7, 0                 ; game_over = TRUE
+    STORE R7, R10, 0                 ; game_over = TRUE
     ; fall through
 
 AFTER_MOVE:
@@ -522,12 +522,12 @@ DRAW_FOOD:
     MOVH R1, food_x.h
     LOAD R1, R1, 0
     MOVL R3, 4
-    SHL R1, R1, R3                   ; pixel_x = food_x * 16
+    SHL R1, R3, R1                   ; pixel_x = food_x * 16
 
     MOVL R2, food_y.l
     MOVH R2, food_y.h
     LOAD R2, R2, 0
-    SHL R2, R2, R3                   ; pixel_y = food_y * 16
+    SHL R2, R3, R2                   ; pixel_y = food_y * 16
 
     MOVL R3, CSIZE                   ; w = 16
     MOVL R4, CSIZE                   ; h = 16
@@ -596,19 +596,19 @@ DRAW_SNAKE:
 
 DS_BODY_LOOP:
     ; Compute segment index: (tail_idx + i) % MAX_SNAKE
-    ADD R1, R6, R9
+    ADD R6, R9, R1
     MOVL R2, MAX_SNAKE
-    MOD R1, R1, R2                   ; R1 = array index of this segment
+    MOD R1, R2, R1                   ; R1 = array index of this segment
 
     ; Load grid coordinates and convert to pixels
-    SHL R2, R1, R13                  ; byte offset = idx * 4
-    ADD R3, R4, R2
+    SHL R1, R13, R2                  ; byte offset = idx * 4
+    ADD R4, R2, R3
     LOAD R3, R3, 0                   ; R3 = segment_x (grid)
-    SHL R3, R3, R12                  ; R3 = pixel_x
+    SHL R3, R12, R3                  ; R3 = pixel_x
 
-    ADD R2, R5, R2
+    ADD R5, R2, R2
     LOAD R2, R2, 0                   ; R2 = segment_y (grid)
-    SHL R2, R2, R12                  ; R2 = pixel_y
+    SHL R2, R12, R2                  ; R2 = pixel_y
 
     ; Draw this segment
     RECT R3, R2, R11, R11, R10
@@ -617,14 +617,14 @@ DS_BODY_LOOP:
     BLT R9, R7, DS_BODY_LOOP
 
     ; ---- Draw head on top in dark green ----
-    SHL R1, R8, R13                  ; byte offset = head_idx * 4
-    ADD R2, R4, R1
+    SHL R8, R13, R1                  ; byte offset = head_idx * 4
+    ADD R4, R1, R2
     LOAD R2, R2, 0
-    SHL R2, R2, R12                  ; pixel_x
+    SHL R2, R12, R2                  ; pixel_x
 
-    ADD R1, R5, R1
+    ADD R5, R1, R1
     LOAD R1, R1, 0
-    SHL R1, R1, R12                  ; pixel_y
+    SHL R1, R12, R1                  ; pixel_y
 
     MOVL R3, DKGREEN.l
     MOVH R3, DKGREEN.h
@@ -716,14 +716,14 @@ SF_RETRY:
 
     ; grid index = y * G_W + x
     MOVL R1, G_W
-    MUL R1, R5, R1
-    ADD R1, R1, R4                   ; R1 = grid index
+    MUL R5, R1, R1
+    ADD R1, R4, R1                   ; R1 = grid index
 
     ; Check whether this cell is empty
     MOVL R2, 2
-    SHL R2, R1, R2                   ; byte offset
-    ADD R2, R6, R2
-    LOAD R3, R2, 0
+    SHL R1, R2, R2                   ; byte offset
+    ADD R6, R2, R2
+    LOAD R2, R3, 0
     BEQ R3, R0, SF_FOUND             ; empty cell found
 
     ; Not empty - retry
@@ -736,18 +736,18 @@ SF_FOUND:
     ; Store food position
     MOVL R2, food_x.l
     MOVH R2, food_x.h
-    STORE R4, R2, 0                  ; food_x = R4
+    STORE R2, R4, 0                  ; food_x = R4
 
     MOVL R2, food_y.l
     MOVH R2, food_y.h
-    STORE R5, R2, 0                  ; food_y = R5
+    STORE R2, R5, 0                  ; food_y = R5
 
     ; Mark cell as food on grid
     MOVL R2, 2
-    SHL R1, R1, R2                   ; byte offset = index * 4
-    ADD R2, R6, R1
+    SHL R1, R2, R1                   ; byte offset = index * 4
+    ADD R6, R1, R2
     MOVL R3, 2
-    STORE R3, R2, 0                  ; grid[index] = 2
+    STORE R2, R3, 0                  ; grid[index] = 2
 
 SF_DONE:
     POP R8
