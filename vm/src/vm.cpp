@@ -46,10 +46,10 @@ void VirtualMachine::loadCode(const char* binFile) {
 }
 
 uint32_t VirtualMachine::readInstructionFromRegister(uint32_t reg) {
-    uint32_t data = (mem[reg] << 24);
-    data |= (mem[reg + 1] << 16);
-    data |= (mem[reg + 2] << 8);
-    data |= (mem[reg + 3]);
+    uint32_t data = ((uint32_t)mem[reg] << 24);
+    data |= ((uint32_t)mem[reg + 1] << 16);
+    data |= ((uint32_t)mem[reg + 2] << 8);
+    data |= mem[reg + 3];
 
     return data;
 }
