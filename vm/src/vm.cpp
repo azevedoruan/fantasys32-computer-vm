@@ -382,18 +382,15 @@ void VirtualMachine::executeInstruction(bool* running) {
             printDebug(instr, opcode, "SYSCALL todo...");
             break;
         case SRAND:
-            srand(regs[i_ra]);
+            rng_state = regs[i_ra];
             printDebug(instr, opcode, "SRAND");
             break;
         case RAND: {
-            int n = rand();
-            if (n <= regs[i_rb]) {
-                n = regs[i_rb];
-            }
-            if (n >= regs[i_rc]) {
-                n = regs[i_rc];
-            }
-            regs[i_ra] = n;
+            rng_state = 1103515245 * rng_state + 12345;
+            int32_t min = regs[i_rb];
+            int32_t max = regs[i_rc];
+            uint32_t range = max - min + 1;
+            regs[i_ra] = (rng_state % range) + min;
             printDebug(instr, opcode, "RAND");
             break;
         }
@@ -440,5 +437,6 @@ uint32_t* VirtualMachine::getBuffer() {
 }
 
 VirtualMachine::~VirtualMachine() {
-    frame_count = 0;
+    delete[] mem;
+    delete[] buffer;
 }
