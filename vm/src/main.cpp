@@ -7,8 +7,8 @@
 // Executa 10⁴ instruções por segundo.
 #define INSTR_PER_SEC 10000
 
-uint8_t setKeyDown(SDL_Keysym keysym);
-uint8_t setKeyUp(SDL_Keysym keysym);
+uint32_t setKeyDown(SDL_Keysym keysym);
+uint32_t setKeyUp(SDL_Keysym keysym);
 bool sleepInstructions(VirtualMachine* vm);
 
 int main(int argc, char* argv[]) {
@@ -124,80 +124,46 @@ bool sleepInstructions(VirtualMachine* vm) {
     return false;
 }
 
-uint8_t setKeyDown(SDL_Keysym keysym) {
+uint32_t setKeyDown(SDL_Keysym keysym) {
     switch (keysym.sym) {
-        case SDLK_LEFT:
-            return 0x00;
-        case SDLK_RIGHT:
-            return 0x01;
-        case SDLK_UP:
-            return 0x02;
-        case SDLK_DOWN:
-            return 0x03;
-        case SDLK_SPACE:
-            return 0x04;
-        case SDLK_KP_ENTER:
-            return 0x05;
-        case SDLK_n:
-            return 0x06;
-        case SDLK_m:
-            return 0x07;
-        case SDLK_a:
-            return 0x08;
-        case SDLK_s:
-            return 0x09;
-        case SDLK_d:
-            return 0x0A;
-        case SDLK_w:
-            return 0x0B;
-        case SDLK_q:
-            return 0x0C;
-        case SDLK_e:
-            return 0x0D;
-        case SDLK_c:
-            return 0x0E;
-        case SDLK_v:
-            return 0x0F;
-        default:
-            return 0;
+        case SDLK_LEFT:     return 1 << 0;
+        case SDLK_RIGHT:    return 1 << 1;
+        case SDLK_UP:       return 1 << 2;
+        case SDLK_DOWN:     return 1 << 3;
+        case SDLK_SPACE:    return 1 << 4;
+        case SDLK_KP_ENTER: return 1 << 5;
+        case SDLK_n:        return 1 << 6;
+        case SDLK_m:        return 1 << 7;
+        case SDLK_a:        return 1 << 8;
+        case SDLK_s:        return 1 << 9;
+        case SDLK_d:        return 1 << 10;
+        case SDLK_w:        return 1 << 11;
+        case SDLK_q:        return 1 << 12;
+        case SDLK_e:        return 1 << 13;
+        case SDLK_c:        return 1 << 14;
+        case SDLK_v:        return 1 << 15;
+        default:            return 0;
     }
 }
 
-uint8_t setKeyUp(SDL_Keysym keysym) {
+uint32_t setKeyUp(SDL_Keysym keysym) {
     switch (keysym.sym) {
-        case SDLK_LEFT:
-            return 0x00;
-        case SDLK_RIGHT:
-            return 0x01;
-        case SDLK_UP:
-            return 0x02;
-        case SDLK_DOWN:
-            return 0x03;
-        case SDLK_SPACE:
-            return 0x04;
-        case SDLK_KP_ENTER:
-            return 0x05;
-        case SDLK_n:
-            return 0x06;
-        case SDLK_m:
-            return 0x07;
-        case SDLK_a:
-            return 0x08;
-        case SDLK_s:
-            return 0x09;
-        case SDLK_d:
-            return 0x0A;
-        case SDLK_w:
-            return 0x0B;
-        case SDLK_q:
-            return 0x0C;
-        case SDLK_e:
-            return 0x0D;
-        case SDLK_c:
-            return 0x0E;
-        case SDLK_v:
-            return 0x0F;
-        default:
-            return 0;
+        case SDLK_LEFT:     return 1 << 0;
+        case SDLK_RIGHT:    return 1 << 1;
+        case SDLK_UP:       return 1 << 2;
+        case SDLK_DOWN:     return 1 << 3;
+        case SDLK_SPACE:    return 1 << 4;
+        case SDLK_KP_ENTER: return 1 << 5;
+        case SDLK_n:        return 1 << 6;
+        case SDLK_m:        return 1 << 7;
+        case SDLK_a:        return 1 << 8;
+        case SDLK_s:        return 1 << 9;
+        case SDLK_d:        return 1 << 10;
+        case SDLK_w:        return 1 << 11;
+        case SDLK_q:        return 1 << 12;
+        case SDLK_e:        return 1 << 13;
+        case SDLK_c:        return 1 << 14;
+        case SDLK_v:        return 1 << 15;
+        default:            return 0;
     }
 }

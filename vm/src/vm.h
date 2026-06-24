@@ -7,6 +7,9 @@
 #include <iostream>
 
 #define TAM_MEM (16 * 1024 * 1024)
+#define MEM_MASK    0x00FFFFFF
+#define STACK_START 0x00FFF000
+#define STACK_END   0x00FFFFFF
 
 // Registers Types
 // Type R - move and memory
@@ -102,7 +105,7 @@ class VirtualMachine {
     void drawRect(int x, int y, int w, int h, uint32_t color);
 
    public:
-    uint8_t input_state = 0;
+    uint32_t input_state = 0;
     int frame_count = 0;
     int sleep_ms = 0;
     VirtualMachine(const char* binFile, int verbosity = 0, int width = 0, int height = 0, int scale_factor = 1);

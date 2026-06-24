@@ -165,14 +165,35 @@ void VirtualMachine::executeInstruction(bool* running) {
             regs[i_rt] = regs[i_rt] | (i_imm18 << 16);
             printDebug(instr, opcode, "MOVH");
             break;
-        case LOAD:
-            regs[i_rt] = mem[regs[i_rs] + (i_imm18 * 4)];
+        case LOAD: {
+            uint32_t addr = regs[i_rs] + (i_imm18 * 4);
+            if (addr & 3 || addr > STACK_END - 3) {
+                std::cerr << "LOAD: invalid address 0x" << std::hex << addr << std::dec << std::endl;
+                *running = false;
+                break;
+            }
+            regs[i_rt] = ((uint32_t)mem[addr] << 24);
+            regs[i_rt] |= ((uint32_t)mem[addr + 1] << 16);
+            regs[i_rt] |= ((uint32_t)mem[addr + 2] << 8);
+            regs[i_rt] |= mem[addr + 3];
             printDebug(instr, opcode, "LOAD");
             break;
-        case STORE:
-            mem[regs[i_rs] + (i_imm18 * 4)] = regs[i_rt];
+        }
+        case STORE: {
+            uint32_t addr = regs[i_rs] + (i_imm18 * 4);
+            if (addr & 3 || addr > STACK_END - 3) {
+                std::cerr << "STORE: invalid address 0x" << std::hex << addr << std::dec << std::endl;
+                *running = false;
+                break;
+            }
+            uint32_t val = regs[i_rt];
+            mem[addr] = (val >> 24) & 0xFF;
+            mem[addr + 1] = (val >> 16) & 0xFF;
+            mem[addr + 2] = (val >> 8) & 0xFF;
+            mem[addr + 3] = val & 0xFF;
             printDebug(instr, opcode, "STORE");
             break;
+        }
         case BEQ:
             if (regs[i_rs] == regs[i_rt]) {
                 regs[PC] = regs[PC] + ((int16_t)(i_imm18 & 0xFFFF) * 4);
@@ -210,33 +231,72 @@ void VirtualMachine::executeInstruction(bool* running) {
             printDebug(instr, opcode, "BGE");
             break;
         // Type J ==========================================
-        case JMP:
-            regs[PC] = addr26 * 4;
+        case JMP: {
+            uint32_t target = addr26 * 4;
+            if (target & 3 || target > STACK_END) {
+                std::cerr << "JMP: invalid target 0x" << std::hex << target << std::dec << std::endl;
+                *running = false;
+                break;
+            }
+            regs[PC] = target;
             printDebug(instr, opcode, "JMP");
             break;
+        }
         case CALL: {
-            regs[SP] = regs[SP] - 4;
-            // Store return address (PC already advanced past CALL) as 4 bytes big-endian
+            uint32_t target = addr26 * 4;
+            if (target & 3 || target > STACK_END) {
+                std::cerr << "CALL: invalid target 0x" << std::hex << target << std::dec << std::endl;
+                *running = false;
+                break;
+            }
+            uint32_t addr = regs[SP] - 4;
+            if (addr < STACK_START) {
+                std::cerr << "CALL: stack overflow" << std::endl;
+                *running = false;
+                break;
+            }
+            regs[SP] = addr;
             uint32_t ret_addr = regs[PC];
-            mem[regs[SP]]     = (ret_addr >> 24) & 0xFF;
-            mem[regs[SP] + 1] = (ret_addr >> 16) & 0xFF;
-            mem[regs[SP] + 2] = (ret_addr >> 8) & 0xFF;
-            mem[regs[SP] + 3] = ret_addr & 0xFF;
-            regs[PC] = addr26 * 4;
+            mem[addr]     = (ret_addr >> 24) & 0xFF;
+            mem[addr + 1] = (ret_addr >> 16) & 0xFF;
+            mem[addr + 2] = (ret_addr >> 8) & 0xFF;
+            mem[addr + 3] = ret_addr & 0xFF;
+            regs[PC] = target;
             printDebug(instr, opcode, "CALL");
             break;
         }
         // Type U ==========================================
-        case PUSH:
-            regs[SP] = regs[SP] - 4;
-            mem[regs[SP]] = regs[i_rd];
+        case PUSH: {
+            uint32_t addr = regs[SP] - 4;
+            if (addr < STACK_START) {
+                std::cerr << "PUSH: stack overflow" << std::endl;
+                *running = false;
+                break;
+            }
+            regs[SP] = addr;
+            uint32_t val = regs[i_rd];
+            mem[addr] = (val >> 24) & 0xFF;
+            mem[addr + 1] = (val >> 16) & 0xFF;
+            mem[addr + 2] = (val >> 8) & 0xFF;
+            mem[addr + 3] = val & 0xFF;
             printDebug(instr, opcode, "PUSH");
             break;
-        case POP:
-            regs[i_rd] = mem[regs[SP]];
-            regs[SP] = regs[SP] + 4;
+        }
+        case POP: {
+            uint32_t addr = regs[SP];
+            if (addr > STACK_END - 3 || addr < STACK_START) {
+                std::cerr << "POP: stack underflow" << std::endl;
+                *running = false;
+                break;
+            }
+            regs[i_rd] = ((uint32_t)mem[addr] << 24);
+            regs[i_rd] |= ((uint32_t)mem[addr + 1] << 16);
+            regs[i_rd] |= ((uint32_t)mem[addr + 2] << 8);
+            regs[i_rd] |= mem[addr + 3];
+            regs[SP] = addr + 4;
             printDebug(instr, opcode, "POP");
             break;
+        }
         case INC:
             regs[i_rd] = regs[i_rd] + 1;
             printDebug(instr, opcode, "INC");
@@ -268,7 +328,7 @@ void VirtualMachine::executeInstruction(bool* running) {
             printDebug(instr, opcode, "CLEAR");
             break;
         case GKEY:
-            if (input_state == regs[i_rb]) {
+            if (input_state & (1 << (regs[i_rb] & 0xF))) {
                 regs[i_ra] = 1;
             } else {
                 regs[i_ra] = 0;
