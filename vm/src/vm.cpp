@@ -14,7 +14,7 @@ VirtualMachine::VirtualMachine(const char* binFile, int verbosity, int width, in
     mem = new uint8_t[size];
     memset(mem, 0, sizeof(uint8_t) * size);
     memset(regs, 0, sizeof(int32_t) * 16);
-    regs[SP] = STACK_END;                         // SP = 0x00FFFFFF
+    regs[SP] = STACK_END;  // SP = 0x00FFFFFF
 
     if (binFile != nullptr)
         loadCode(binFile);
@@ -55,7 +55,7 @@ uint32_t VirtualMachine::readInstructionFromRegister(uint32_t reg) {
 }
 
 void VirtualMachine::executeInstruction(bool* running) {
-    // Something happened outside this scope and must finish the loop
+    // If something happens outside this scope, must finish the loop
     if (*running == false) {
         return;
     }
@@ -278,7 +278,7 @@ void VirtualMachine::executeInstruction(bool* running) {
             }
             regs[SP] = addr;
             uint32_t ret_addr = regs[PC];
-            mem[addr]     = (ret_addr >> 24) & 0xFF;
+            mem[addr] = (ret_addr >> 24) & 0xFF;
             mem[addr + 1] = (ret_addr >> 16) & 0xFF;
             mem[addr + 2] = (ret_addr >> 8) & 0xFF;
             mem[addr + 3] = ret_addr & 0xFF;
