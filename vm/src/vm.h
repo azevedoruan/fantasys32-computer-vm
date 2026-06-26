@@ -6,6 +6,8 @@
 #include <iomanip>
 #include <iostream>
 
+#include <SDL2/SDL.h>
+
 #define TAM_MEM (16 * 1024 * 1024)
 
 // Registers Types
@@ -67,7 +69,14 @@ class VirtualMachine {
    private:
     int flag = 0;  // To print log (0 = no print, 1 = instr, 2 = instr and details)
     uint32_t readInstructionFromRegister(uint32_t reg);
+    void writeWord(uint32_t addr, uint32_t value);
     void printFlags(uint32_t instr, uint32_t opcode, const char* instrName);
+    void renderText(int x, int y, const char* text, uint32_t argb);
+
+    SDL_Window*   window   = nullptr;
+    SDL_Renderer* renderer = nullptr;
+    int           scale    = 1;
+    uint32_t      frame_count = 0;
 
    public:
     const int32_t SP = 14;
@@ -90,6 +99,7 @@ class VirtualMachine {
 
     VirtualMachine(const char* binFile, int flag = 0);
     ~VirtualMachine();
+    void initSDL(int scale);
     void loadCode(const char* binFile);
     void executeInstruction();
 };

@@ -57,6 +57,7 @@ int main(int argc, char* argv[]) {
     }
 
     VirtualMachine* vm = new VirtualMachine(file_path.c_str(), verbosity);
+    vm->initSDL(scale);
 
     while (1) {
         vm->executeInstruction();
